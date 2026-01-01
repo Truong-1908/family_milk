@@ -1,0 +1,173 @@
+[
+    {
+        "keywords": [
+            "xin chào",
+            "hello",
+            "hi",
+            "chào bạn",
+            "alo",
+            "ad ơi"
+        ],
+        "answer": "Xin chào! 👋 Tôi là trợ lý ảo MilkFamily. Tôi có thể giúp gì cho bạn về các sản phẩm sữa sạch hôm nay?"
+    },
+    {
+        "keywords": [
+            "tạm biệt",
+            "bye",
+            "hẹn gặp lại",
+            "cảm ơn"
+        ],
+        "answer": "Cảm ơn bạn đã ghé thăm MilkFamily! Hẹn gặp lại bạn sớm nhé. Chúc bạn một ngày tràn đầy năng lượng! 🌟"
+    },
+    {
+        "keywords": [
+            "sản phẩm nào",
+            "có những gì",
+            "liệt kê",
+            "danh sách",
+            "menu",
+            "bán gì",
+            "có sữa gì"
+        ],
+        "answer": "Hiện tại MilkFamily cung cấp các dòng sản phẩm chính: **Sữa Tươi Vinamilk**, **TH True Milk** và **Đà Lạt Milk**. Bạn có thể nhập tên hoặc mã sản phẩm để tôi tra cứu chi tiết nhé!"
+    },
+    {
+        "keywords": [
+            "giá",
+            "bao nhiêu tiền",
+            "đắt không",
+            "chi phí",
+            "báo giá"
+        ],
+        "answer": "Giá bán lẻ của sản phẩm **{product}** thường dao động tùy thuộc vào đại lý và chương trình khuyến mãi. Bạn vui lòng xem giá niêm yết chính xác tại các siêu thị lớn hoặc trên bao bì sản phẩm."
+    },
+    {
+        "keywords": [
+            "hạn sử dụng",
+            "hsd",
+            "date",
+            "hết hạn",
+            "ngày hết hạn",
+            "date xa không"
+        ],
+        "answer": "Hạn sử dụng của **{product}** luôn được in rõ dưới đáy bao bì. Đặc biệt, thông tin này đã được lưu trữ vĩnh viễn trên Blockchain nên bạn hoàn toàn yên tâm không lo bị dập lại date giả!"
+    },
+    {
+        "keywords": [
+            "bảo quản",
+            "giữ lạnh",
+            "nhiệt độ",
+            "hư hỏng",
+            "để được bao lâu"
+        ],
+        "answer": "Để **{product}** luôn ngon, bạn nên bảo quản ở nơi khô ráo, thoáng mát. Nếu là sữa thanh trùng hoặc sau khi mở nắp, BẮT BUỘC phải bảo quản lạnh (4-6 độ C) và dùng hết trong 24h nhé."
+    },
+    {
+        "keywords": [
+            "thành phần",
+            "chất lượng",
+            "nguyên liệu",
+            "bao gồm gì",
+            "có đường không"
+        ],
+        "answer": "**{product}** được sản xuất từ 100% sữa bò tươi nguyên chất từ trang trại đạt chuẩn quốc tế. Tùy loại sẽ có loại Có đường, Ít đường hoặc Không đường để bạn lựa chọn."
+    },
+    {
+        "keywords": [
+            "thật giả",
+            "chính hãng",
+            "fake",
+            "lừa đảo",
+            "uy tín",
+            "check",
+            "kiểm tra"
+        ],
+        "answer": "Bạn có thể hoàn toàn yên tâm! 🛡️ Sản phẩm **{product}** này là HÀNG CHÍNH HÃNG. Lịch sử nguồn gốc đã được xác thực minh bạch trên Blockchain, không ai có thể làm giả được."
+    },
+    {
+        "keywords": [
+            "blockchain",
+            "công nghệ",
+            "truy xuất",
+            "chuỗi khối"
+        ],
+        "answer": "Với công nghệ Blockchain, MilkFamily ghi lại mọi hành trình của hộp sữa từ trang trại -> nhà máy -> cửa hàng. Dữ liệu này là bất biến, giúp bạn mua được hộp sữa 'Sạch' đúng nghĩa!"
+    },
+    {
+        "keywords": [
+            "ship",
+            "giao hàng",
+            "vận chuyển",
+            "phí ship",
+            "bao lâu nhận được"
+        ],
+        "answer": "MilkFamily hỗ trợ giao hàng hỏa tốc trong 2h tại nội thành và 1-3 ngày với các tỉnh khác. Miễn phí vận chuyển cho đơn hàng từ 500k trở lên! 🚚"
+    },
+    {
+        "keywords": [
+            "thanh toán",
+            "trả tiền",
+            "chuyển khoản",
+            "thẻ"
+        ],
+        "answer": "Chúng tôi chấp nhận thanh toán qua: Tiền mặt (COD), Chuyển khoản ngân hàng, Ví MoMo/ZaloPay và thẻ Visa/Mastercard."
+    },
+    {
+        "keywords": [
+            "đổi trả",
+            "hoàn tiền",
+            "bảo hành",
+            "khiếu nại"
+        ],
+        "answer": "Cam kết 1 đổi 1 trong vòng 7 ngày nếu sản phẩm bị lỗi do nhà sản xuất (hư hỏng, chua, rách bao bì). Bạn cứ yên tâm mua sắm nhé!"
+    },
+    {
+        "keywords": [
+            "mua sỉ",
+            "số lượng lớn",
+            "đại lý",
+            "nhập hàng"
+        ],
+        "answer": "Nếu bạn muốn mua số lượng lớn hoặc đăng ký làm đại lý, vui lòng liên hệ trực tiếp Hotline 1900 1500 để nhận bảng giá chiết khấu đặc biệt."
+    },
+    {
+        "keywords": [
+            "trẻ em",
+            "bé",
+            "cho con",
+            "người già",
+            "bầu",
+            "ai uống được"
+        ],
+        "answer": "**{product}** rất giàu Canxi và Vitamin D, phù hợp cho trẻ em đang phát triển chiều cao, người già cần bổ sung canxi và phụ nữ mang thai."
+    },
+    {
+        "keywords": [
+            "khuyến mãi",
+            "giảm giá",
+            "uudai",
+            "coupon",
+            "voucher"
+        ],
+        "answer": "Hiện tại đang có chương trình 'Mua 1 thùng tặng 4 hộp' áp dụng cho khách hàng thành viên. Nhanh tay đặt hàng nào! 🎁"
+    },
+    {
+        "keywords": [
+            "tác dụng",
+            "công dụng",
+            "bổ dưỡng",
+            "tốt không",
+            "lợi ích"
+        ],
+        "answer": "**{product}** cung cấp dồi dào Protein, Canxi, Vitamin D3 và khoáng chất thiết yếu giúp xương chắc khỏe, tăng cường hệ miễn dịch và cung cấp năng lượng cho ngày dài."
+    },
+    {
+        "keywords": [
+            "mua ở đâu",
+            "bán ở đâu",
+            "địa chỉ",
+            "shop ở đâu"
+        ],
+        "answer": "Bạn có thể đặt hàng ngay tại Website này hoặc ghé thăm hệ thống cửa hàng MilkFamily tại các siêu thị lớn trên toàn quốc."
+    }
+]

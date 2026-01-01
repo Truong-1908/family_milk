@@ -1,27 +1,46 @@
-// Giả lập AI trả lời (Bạn có thể nâng cấp lên Google Gemini API thật ở đây sau này)
+const fs = require('fs');
+const path = require('path');
+
+// Load dữ liệu training
+let knowledgeBase = [];
+try {
+  const dataPath = path.join(__dirname, 'training_data.json');
+  const rawData = fs.readFileSync(dataPath);
+  knowledgeBase = JSON.parse(rawData);
+} catch (e) {
+  console.error("Lỗi load training data:", e);
+}
+
 const getAnswer = (productName, question) => {
   const q = question.toLowerCase();
   const name = productName || "Sản phẩm";
 
-  // Logic trả lời dựa trên từ khóa
-  if (q.includes("giá")) {
-    return `Giá bán lẻ tham khảo của **${name}** dao động tùy theo đại lý và chương trình khuyến mãi hiện tại.`;
-  }
-  if (q.includes("hạn sử dụng") || q.includes("hsd") || q.includes("date")) {
-    return `Hạn sử dụng của **${name}** được in rõ dưới đáy lon và đã được lưu trữ bất biến trên Blockchain để đảm bảo an toàn.`;
-  }
-  if (q.includes("bảo quản")) {
-    return `Bạn nên bảo quản **${name}** ở nơi khô ráo, thoáng mát, tránh ánh nắng trực tiếp. Sau khi mở nắp nên dùng hết trong ngày.`;
-  }
-  if (q.includes("thành phần") || q.includes("chất lượng")) {
-    return `**${name}** được làm từ 100% sữa tươi nguyên chất và các nguyên liệu tự nhiên, đạt chuẩn ISO quốc tế.`;
-  }
-  if (q.includes("chính hãng") || q.includes("thật giả")) {
-    return `Bạn có thể hoàn toàn yên tâm. Đây là sản phẩm **${name}** CHÍNH HÃNG đã được xác thực qua hệ thống Blockchain của chúng tôi.`;
+  let bestMatch = null;
+  let maxScore = 0;
+
+  // Thuật toán chấm điểm câu hỏi (Keyword Scoring)
+  for (const item of knowledgeBase) {
+    let score = 0;
+    for (const kw of item.keywords) {
+      if (q.includes(kw)) {
+        score++;
+      }
+    }
+
+    // Nếu điểm cao hơn điểm hiện tại thì chọn làm câu trả lời tốt nhất
+    if (score > maxScore) {
+      maxScore = score;
+      bestMatch = item;
+    }
   }
 
-  // Câu trả lời mặc định
-  return `Cảm ơn bạn đã quan tâm đến **${name}**. Nếu cần thêm thông tin chi tiết, vui lòng liên hệ hotline 1900 1500.`;
+  // Nếu tìm thấy câu trả lời phù hợp (score > 0)
+  if (bestMatch) {
+    return bestMatch.answer.replace(/{product}/g, name);
+  }
+
+  // Câu trả lời mặc định nếu AI "bó tay"
+  return `Cảm ơn bạn đã quan tâm đến **${name}**. Câu hỏi này hơi khó với tôi 😅. Bạn vui lòng liên hệ hotline 1900 1500 để được hỗ trợ nhé!`;
 };
 
 module.exports = { getAnswer };

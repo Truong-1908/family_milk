@@ -196,6 +196,7 @@ const UserDashboard = ({ onBack }) => {
                     onClose={() => setShowScanner(false)}
                 />
             )}
+            <Chatbot />
         </div>
     );
 };
