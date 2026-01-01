@@ -1,0 +1,1 @@
+# Script tạo dữ liệu mẫu 500 sản phẩm

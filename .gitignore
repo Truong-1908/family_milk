@@ -1,0 +1,33 @@
+Bỏ qua thư viện Node.js (Rất nặng)
+
+node_modules/
+frontend/node_modules/
+backend/node_modules/
+blockchain/node_modules/
+
+Bỏ qua thư viện Python & Môi trường ảo
+
+pycache/
+*.py[cod]
+*$py.class
+venv/
+env/
+.env
+
+Bỏ qua file hệ thống & IDE
+
+.DS_Store
+.vscode/
+.idea/
+
+Bỏ qua file build
+
+dist/
+build/
+artifacts/
+cache/
+
+Bỏ qua Database local (Không up dữ liệu thật lên)
+
+backend/data/
+*.log
