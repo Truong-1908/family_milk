@@ -1,46 +1,55 @@
+const { GoogleGenerativeAI } = require("@google/generative-ai");
 const fs = require('fs');
 const path = require('path');
+require('dotenv').config();
 
-// Load dữ liệu training
-let knowledgeBase = [];
+// 1. Cấu hình Gemini
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+
+// 2. Load Knowledge Base (Dữ liệu nền)
+let contextData = "";
 try {
   const dataPath = path.join(__dirname, 'training_data.json');
-  const rawData = fs.readFileSync(dataPath);
-  knowledgeBase = JSON.parse(rawData);
+  const rawData = fs.readFileSync(dataPath, 'utf8');
+  // Chuyển JSON thành text để nhồi vào prompt
+  const json = JSON.parse(rawData);
+  contextData = json.map(item =>
+    `- Keywords: ${item.keywords.join(", ")}\n  Answer: ${item.answer}`
+  ).join("\n\n");
 } catch (e) {
   console.error("Lỗi load training data:", e);
 }
 
-const getAnswer = (productName, question) => {
-  const q = question.toLowerCase();
-  const name = productName || "Sản phẩm";
+// 3. Hàm gọi Gemini
+const getAnswer = async (productName, question) => {
+  try {
+    // Sử dụng model 'gemini-flash-latest' vì nó miễn phí và nhanh
+    const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
 
-  let bestMatch = null;
-  let maxScore = 0;
+    const prompt = `
+    Bạn là trợ lý ảo của hệ thống "MilkFamily" - Hệ thống bán sữa và xác thực sản phẩm bằng Blockchain.
+    
+    Hãy trả lời câu hỏi của khách hàng dựa trên "Cơ sở dữ liệu" dưới đây.
+    Nếu câu hỏi không liên quan hoặc không có trong dữ liệu, hãy trả lời khéo léo và gợi ý liên hệ hotline 1900 1500.
+    
+    Thông tin sản phẩm khách đang xem: ${productName || "Không rõ"}
 
-  // Thuật toán chấm điểm câu hỏi (Keyword Scoring)
-  for (const item of knowledgeBase) {
-    let score = 0;
-    for (const kw of item.keywords) {
-      if (q.includes(kw)) {
-        score++;
-      }
-    }
+    --- CƠ SỞ DỮ LIỆU ---
+    ${contextData}
+    ---------------------
 
-    // Nếu điểm cao hơn điểm hiện tại thì chọn làm câu trả lời tốt nhất
-    if (score > maxScore) {
-      maxScore = score;
-      bestMatch = item;
-    }
+    Câu hỏi của khách: "${question}"
+    
+    Hãy trả lời ngắn gọn, thân thiện, có emoji và tập trung vào sản phẩm sữa.
+    `;
+
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    return response.text();
+  } catch (error) {
+    console.error("Gemini Error:", error);
+    return `Xin lỗi, hiện tại tôi đang bị quá tải. Bạn hãy thử lại sau chút xíu nhé! 😅 (Lỗi kết nối AI: ${error.message})`;
   }
-
-  // Nếu tìm thấy câu trả lời phù hợp (score > 0)
-  if (bestMatch) {
-    return bestMatch.answer.replace(/{product}/g, name);
-  }
-
-  // Câu trả lời mặc định nếu AI "bó tay"
-  return `Cảm ơn bạn đã quan tâm đến **${name}**. Câu hỏi này hơi khó với tôi 😅. Bạn vui lòng liên hệ hotline 1900 1500 để được hỗ trợ nhé!`;
 };
 
 module.exports = { getAnswer };

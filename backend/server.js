@@ -165,9 +165,9 @@ app.get("/scan_history", async (req, res) => {
 });
 
 // 6. Hỏi đáp AI
-app.post("/ask_ai", (req, res) => {
+app.post("/ask_ai", async (req, res) => {
   const { product_name, question } = req.body;
-  const ans = getAnswer(product_name, question);
+  const ans = await getAnswer(product_name, question);
   res.json({ answer: ans });
 });
 
