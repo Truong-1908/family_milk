@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { AnimatePresence, motion } from "framer-motion"; // [MỚI] Import framer-motion
 import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
@@ -107,32 +108,46 @@ export default function App() {
         </nav>
       )}
 
-      {/* Main Content */}
-      <div className="flex-grow-1 d-flex flex-column">
-        {page === "home" && <HomePage onStart={() => setPage("user-dashboard")} />}
+      {/* Main Content with Animation */}
+      <div className="flex-grow-1 d-flex flex-column position-relative">
+        <AnimatePresence mode="wait">
+          {page === "home" && (
+            <motion.div key="home" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="flex-grow-1 d-flex flex-column">
+              <HomePage onStart={() => setPage("user-dashboard")} />
+            </motion.div>
+          )}
 
-        {page === "login" && (
-          <LoginPage
-            onLogin={handleLogin}
-            onSwitchToRegister={() => setPage("register")}
-            onBack={() => setPage("home")}
-          />
-        )}
+          {page === "login" && (
+            <motion.div key="login" initial={{ opacity: 0, x: 50 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -50 }} className="flex-grow-1 d-flex flex-column justify-content-center">
+              <LoginPage
+                onLogin={handleLogin}
+                onSwitchToRegister={() => setPage("register")}
+                onBack={() => setPage("home")}
+              />
+            </motion.div>
+          )}
 
-        {page === "register" && (
-          <RegisterPage
-            onRegister={handleRegister}
-            onSwitchToLogin={() => setPage("login")}
-          />
-        )}
+          {page === "register" && (
+            <motion.div key="register" initial={{ opacity: 0, x: 50 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -50 }} className="flex-grow-1 d-flex flex-column justify-content-center">
+              <RegisterPage
+                onRegister={handleRegister}
+                onSwitchToLogin={() => setPage("login")}
+              />
+            </motion.div>
+          )}
 
-        {page === "admin-dashboard" && userRole === 'admin' && (
-          <AdminDashboard onLogout={handleLogout} />
-        )}
+          {page === "admin-dashboard" && userRole === 'admin' && (
+            <motion.div key="admin" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex-grow-1">
+              <AdminDashboard onLogout={handleLogout} />
+            </motion.div>
+          )}
 
-        {page === "user-dashboard" && (
-          <UserDashboard onBack={() => setPage("home")} />
-        )}
+          {page === "user-dashboard" && (
+            <motion.div key="user" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex-grow-1">
+              <UserDashboard onBack={() => setPage("home")} />
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );

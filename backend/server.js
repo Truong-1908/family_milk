@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+const bcrypt = require("bcryptjs"); // [MỚI] Import bcryptjs
 const QRCode = require("qrcode"); // Thư viện tạo mã QR
 const connectDB = require("./database");
 const { Product, History, User } = require("./models");
@@ -61,6 +62,7 @@ app.post("/create_product", async (req, res) => {
     const newProduct = new Product({
       uid: p.uid,
       name: p.name,
+      category: p.category || "Sữa Tươi", // [MỚI] Lưu loại sản phẩm
       batch_number: p.batch_number,
       expiry_date: new Date(p.expiry_date_unix * 1000).toLocaleDateString(
         "vi-VN"
@@ -88,6 +90,62 @@ app.post("/create_product", async (req, res) => {
   }
 });
 
+// [MỚI] API Nhập hàng loạt từ CSV
+app.post("/create_products_bulk", async (req, res) => {
+  try {
+    const products = req.body.products;
+    console.log(`📦 Đang xử lý nhập hàng loạt: ${products.length} sản phẩm...`);
+    const results = [];
+
+    for (const p of products) {
+      try {
+        if (await Product.findOne({ uid: p.uid })) {
+          results.push({ uid: p.uid, status: "skip", message: "Đã tồn tại" });
+          continue;
+        }
+
+        // Ghi Blockchain
+        const txHash = await createOnChain(
+          p.uid,
+          p.name,
+          p.batch_number,
+          p.expiry_date_unix
+        );
+
+        // Tạo QR
+        const clientURL = `http://localhost:5173?uid=${p.uid}`;
+        const qrBase64 = await QRCode.toDataURL(clientURL);
+
+        // Lưu DB
+        const newProduct = new Product({
+          uid: p.uid,
+          name: p.name,
+          category: p.category || "Sữa Tươi", // Nhận category từ file CSV
+          batch_number: p.batch_number,
+          expiry_date:
+            p.expiry_date ||
+            new Date(p.expiry_date_unix * 1000).toLocaleDateString("vi-VN"),
+          expiry_unix: p.expiry_date_unix,
+          created_at: new Date().toLocaleDateString("vi-VN"),
+          tx_hash: txHash,
+          qr_image: qrBase64,
+          product_image: p.product_image,
+          description: p.description,
+        });
+
+        await newProduct.save();
+        results.push({ uid: p.uid, status: "success" });
+        console.log(`✅ Đã nhập: ${p.uid}`);
+      } catch (err) {
+        console.error(`❌ Lỗi ${p.uid}:`, err.message);
+      }
+    }
+    res.json({ status: "success", results: results });
+  } catch (e) {
+    res.status(500).json({ status: "error", message: e.message });
+  }
+});
+
 // 3. Xác thực sản phẩm (Dành cho User khi quét mã)
 app.get("/verify/:uid", async (req, res) => {
   try {
@@ -101,10 +159,12 @@ app.get("/verify/:uid", async (req, res) => {
         is_valid: true,
         uid: p.uid,
         name: p.name,
+        category: p.category, // [MỚI] Trả về category
         batch_number: p.batch_number,
         expiry_date: p.expiry_date,
         product_image: p.product_image,
         description: p.description,
+        tx_hash: p.tx_hash, // [MỚI] Trả về thông tin Blockchain
         source: "Database",
       });
     }
@@ -137,15 +197,20 @@ app.get("/verify/:uid", async (req, res) => {
 // 4. Ghi nhận lượt quét (Thống kê)
 app.post("/record_scan", async (req, res) => {
   try {
-    // Tăng số lần quét
-    await Product.updateOne({ uid: req.body.uid }, { $inc: { scan_count: 1 } });
+    const { uid, location, status } = req.body;
 
-    // Lưu lịch sử chi tiết
+    // Chỉ tăng đếm nếu hợp lệ
+    if (status !== 'invalid') {
+      await Product.updateOne({ uid: uid }, { $inc: { scan_count: 1 } });
+    }
+
+    // Lưu lịch sử chi tiết (cả đúng và sai)
     const now = new Date();
     await History.create({
-      uid: req.body.uid,
-      location: req.body.location || "Không xác định",
+      uid: uid,
+      location: location || "Không xác định",
       time: now.toLocaleString("vi-VN"),
+      status: status || 'valid'
     });
 
     res.json({ status: "success" });
@@ -180,8 +245,11 @@ app.post("/register", async (req, res) => {
     const exists = await User.findOne({ username });
     if (exists) return res.json({ status: "error", message: "Tên đăng nhập đã tồn tại!" });
 
+    // Mã hóa mật khẩu
+    const hashedPassword = await bcrypt.hash(password, 10);
+
     // Tạo user mới
-    const newUser = new User({ fullname, username, email, password, role: 'user' });
+    const newUser = new User({ fullname, username, email, password: hashedPassword, role: 'user' });
     await newUser.save();
 
     res.json({ status: "success", message: "Đăng ký thành công!" });
@@ -194,9 +262,9 @@ app.post("/register", async (req, res) => {
 app.post("/login", async (req, res) => {
   try {
     const { username, password } = req.body;
-    const user = await User.findOne({ username, password }); // Demo: so sánh plain text
+    const user = await User.findOne({ username });
 
-    if (user) {
+    if (user && (await bcrypt.compare(password, user.password))) {
       res.json({
         status: "success",
         user: {
@@ -221,6 +289,22 @@ app.get("/users", async (req, res) => {
     res.json(users);
   } catch (e) {
     res.json([]);
+  }
+});
+
+// [THÊM API NÀY] Dùng để Reset dữ liệu khi cần
+app.get("/clear_database", async (req, res) => {
+  try {
+    // Xóa sạch Sản phẩm và Lịch sử quét
+    await Product.deleteMany({});
+    await History.deleteMany({});
+
+    console.log("⚠️ Đã xóa sạch dữ liệu trong Database!");
+    res.send(
+      "<h1>✅ Đã xóa sạch Database! Giờ bạn có thể Import lại từ đầu.</h1>"
+    );
+  } catch (e) {
+    res.status(500).send("Lỗi: " + e.message);
   }
 });
 

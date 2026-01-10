@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:8000"; // Đảm bảo Backend đang chạy ở cổng này
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000"; // Tự động nhận diện URL Backend
 
 export const api = {
   // Lấy danh sách sản phẩm

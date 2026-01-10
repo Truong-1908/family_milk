@@ -9,6 +9,19 @@ const productSchema = new mongoose.Schema({
   expiry_unix: Number, // Hạn sử dụng (số giây, dùng để so sánh logic)
   created_at: String, // Ngày tạo
 
+  // [MỚI] Thêm phân loại
+  category: {
+    type: String,
+    default: "Sữa Tươi",
+    enum: [
+      "Sữa Bột Cho Bé",
+      "Sữa Người Lớn",
+      "Sữa Tươi",
+      "Sữa Hạt",
+      "Sữa Chua",
+    ],
+  },
+
   // Dữ liệu Blockchain & Xác thực
   tx_hash: String, // Mã giao dịch (Transaction Hash) lưu trên Blockchain
 
@@ -25,6 +38,7 @@ const historySchema = new mongoose.Schema({
   uid: String,
   location: String,
   time: String,
+  status: { type: String, enum: ['valid', 'invalid'], default: 'valid' }, // [MỚI] Trạng thái
   timestamp: { type: Date, default: Date.now },
 });
 
