@@ -1,173 +1,56 @@
 [
-    {
-        "keywords": [
-            "xin chào",
-            "hello",
-            "hi",
-            "chào bạn",
-            "alo",
-            "ad ơi"
-        ],
-        "answer": "Xin chào! 👋 Tôi là trợ lý ảo MilkFamily. Tôi có thể giúp gì cho bạn về các sản phẩm sữa sạch hôm nay?"
-    },
-    {
-        "keywords": [
-            "tạm biệt",
-            "bye",
-            "hẹn gặp lại",
-            "cảm ơn"
-        ],
-        "answer": "Cảm ơn bạn đã ghé thăm MilkFamily! Hẹn gặp lại bạn sớm nhé. Chúc bạn một ngày tràn đầy năng lượng! 🌟"
-    },
-    {
-        "keywords": [
-            "sản phẩm nào",
-            "có những gì",
-            "liệt kê",
-            "danh sách",
-            "menu",
-            "bán gì",
-            "có sữa gì"
-        ],
-        "answer": "Hiện tại MilkFamily cung cấp các dòng sản phẩm chính: **Sữa Tươi Vinamilk**, **TH True Milk** và **Đà Lạt Milk**. Bạn có thể nhập tên hoặc mã sản phẩm để tôi tra cứu chi tiết nhé!"
-    },
-    {
-        "keywords": [
-            "giá",
-            "bao nhiêu tiền",
-            "đắt không",
-            "chi phí",
-            "báo giá"
-        ],
-        "answer": "Giá bán lẻ của sản phẩm **{product}** thường dao động tùy thuộc vào đại lý và chương trình khuyến mãi. Bạn vui lòng xem giá niêm yết chính xác tại các siêu thị lớn hoặc trên bao bì sản phẩm."
-    },
-    {
-        "keywords": [
-            "hạn sử dụng",
-            "hsd",
-            "date",
-            "hết hạn",
-            "ngày hết hạn",
-            "date xa không"
-        ],
-        "answer": "Hạn sử dụng của **{product}** luôn được in rõ dưới đáy bao bì. Đặc biệt, thông tin này đã được lưu trữ vĩnh viễn trên Blockchain nên bạn hoàn toàn yên tâm không lo bị dập lại date giả!"
-    },
-    {
-        "keywords": [
-            "bảo quản",
-            "giữ lạnh",
-            "nhiệt độ",
-            "hư hỏng",
-            "để được bao lâu"
-        ],
-        "answer": "Để **{product}** luôn ngon, bạn nên bảo quản ở nơi khô ráo, thoáng mát. Nếu là sữa thanh trùng hoặc sau khi mở nắp, BẮT BUỘC phải bảo quản lạnh (4-6 độ C) và dùng hết trong 24h nhé."
-    },
-    {
-        "keywords": [
-            "thành phần",
-            "chất lượng",
-            "nguyên liệu",
-            "bao gồm gì",
-            "có đường không"
-        ],
-        "answer": "**{product}** được sản xuất từ 100% sữa bò tươi nguyên chất từ trang trại đạt chuẩn quốc tế. Tùy loại sẽ có loại Có đường, Ít đường hoặc Không đường để bạn lựa chọn."
-    },
-    {
-        "keywords": [
-            "thật giả",
-            "chính hãng",
-            "fake",
-            "lừa đảo",
-            "uy tín",
-            "check",
-            "kiểm tra"
-        ],
-        "answer": "Bạn có thể hoàn toàn yên tâm! 🛡️ Sản phẩm **{product}** này là HÀNG CHÍNH HÃNG. Lịch sử nguồn gốc đã được xác thực minh bạch trên Blockchain, không ai có thể làm giả được."
-    },
-    {
-        "keywords": [
-            "blockchain",
-            "công nghệ",
-            "truy xuất",
-            "chuỗi khối"
-        ],
-        "answer": "Với công nghệ Blockchain, MilkFamily ghi lại mọi hành trình của hộp sữa từ trang trại -> nhà máy -> cửa hàng. Dữ liệu này là bất biến, giúp bạn mua được hộp sữa 'Sạch' đúng nghĩa!"
-    },
-    {
-        "keywords": [
-            "ship",
-            "giao hàng",
-            "vận chuyển",
-            "phí ship",
-            "bao lâu nhận được"
-        ],
-        "answer": "MilkFamily hỗ trợ giao hàng hỏa tốc trong 2h tại nội thành và 1-3 ngày với các tỉnh khác. Miễn phí vận chuyển cho đơn hàng từ 500k trở lên! 🚚"
-    },
-    {
-        "keywords": [
-            "thanh toán",
-            "trả tiền",
-            "chuyển khoản",
-            "thẻ"
-        ],
-        "answer": "Chúng tôi chấp nhận thanh toán qua: Tiền mặt (COD), Chuyển khoản ngân hàng, Ví MoMo/ZaloPay và thẻ Visa/Mastercard."
-    },
-    {
-        "keywords": [
-            "đổi trả",
-            "hoàn tiền",
-            "bảo hành",
-            "khiếu nại"
-        ],
-        "answer": "Cam kết 1 đổi 1 trong vòng 7 ngày nếu sản phẩm bị lỗi do nhà sản xuất (hư hỏng, chua, rách bao bì). Bạn cứ yên tâm mua sắm nhé!"
-    },
-    {
-        "keywords": [
-            "mua sỉ",
-            "số lượng lớn",
-            "đại lý",
-            "nhập hàng"
-        ],
-        "answer": "Nếu bạn muốn mua số lượng lớn hoặc đăng ký làm đại lý, vui lòng liên hệ trực tiếp Hotline 1900 1500 để nhận bảng giá chiết khấu đặc biệt."
-    },
-    {
-        "keywords": [
-            "trẻ em",
-            "bé",
-            "cho con",
-            "người già",
-            "bầu",
-            "ai uống được"
-        ],
-        "answer": "**{product}** rất giàu Canxi và Vitamin D, phù hợp cho trẻ em đang phát triển chiều cao, người già cần bổ sung canxi và phụ nữ mang thai."
-    },
-    {
-        "keywords": [
-            "khuyến mãi",
-            "giảm giá",
-            "uudai",
-            "coupon",
-            "voucher"
-        ],
-        "answer": "Hiện tại đang có chương trình 'Mua 1 thùng tặng 4 hộp' áp dụng cho khách hàng thành viên. Nhanh tay đặt hàng nào! 🎁"
-    },
-    {
-        "keywords": [
-            "tác dụng",
-            "công dụng",
-            "bổ dưỡng",
-            "tốt không",
-            "lợi ích"
-        ],
-        "answer": "**{product}** cung cấp dồi dào Protein, Canxi, Vitamin D3 và khoáng chất thiết yếu giúp xương chắc khỏe, tăng cường hệ miễn dịch và cung cấp năng lượng cho ngày dài."
-    },
-    {
-        "keywords": [
-            "mua ở đâu",
-            "bán ở đâu",
-            "địa chỉ",
-            "shop ở đâu"
-        ],
-        "answer": "Bạn có thể đặt hàng ngay tại Website này hoặc ghé thăm hệ thống cửa hàng MilkFamily tại các siêu thị lớn trên toàn quốc."
-    }
+  {
+    "keywords": [
+      "sản phẩm",
+      "bán gì",
+      "danh mục",
+      "có sữa gì",
+      "loại sữa",
+      "menu"
+    ],
+    "answer": "MilkFamily hiện cung cấp 5 dòng sản phẩm chính đáp ứng mọi nhu cầu của gia đình bạn:\n1. 🥛 **Sữa Tươi**: Vinamilk, TH True Milk, Đà Lạt Milk...\n2. 👶 **Sữa Bột Cho Bé**: Meiji, Aptamil, Nan, Similac...\n3. 👵 **Sữa Người Lớn**: Ensure, Glucerna, Anlene...\n4. 🌰 **Sữa Hạt**: Sữa đậu nành, óc chó, hạnh nhân (TH True Nut, Fami...)\n5. 🥣 **Sữa Chua**: Sữa chua ăn, sữa chua uống men sống.\n\nBạn đang quan tâm đến loại nào để mình tư vấn kỹ hơn ạ? ✨"
+  },
+  {
+    "keywords": ["sữa tươi", "tươi", "th true milk", "vinamilk", "dalat milk"],
+    "answer": "Dạ, bên mình có đầy đủ các loại Sữa Tươi từ các thương hiệu lớn như Vinamilk, TH True Milk, Đà Lạt Milk với nhiều hương vị (Có đường, Ít đường, Dâu, Socola...). Bạn muốn tìm loại hộp giấy hay bịch ạ?"
+  },
+  {
+    "keywords": [
+      "sữa bột",
+      "cho bé",
+      "trẻ em",
+      "sơ sinh",
+      "công thức",
+      "meiji",
+      "nan"
+    ],
+    "answer": "Về Sữa Bột Cho Bé, MilkFamily có các dòng nhập khẩu và nội địa nổi tiếng như Meiji (Nhật), Aptamil (Úc/Anh), Nan, Similac... giúp bé phát triển toàn diện chiều cao và trí não. Bé nhà mình hiện bao nhiêu tháng tuổi rồi ạ?"
+  },
+  {
+    "keywords": [
+      "người lớn",
+      "người già",
+      "xương khớp",
+      "tiểu đường",
+      "ensure",
+      "anlene"
+    ],
+    "answer": "Đối với Sữa Người Lớn, shop có Ensure Gold (bồi bổ sức khỏe), Glucerna (cho người tiểu đường), Anlene (cho xương khớp)... Bạn muốn mua cho bố mẹ hay ông bà dùng ạ?"
+  },
+  {
+    "keywords": ["sữa hạt", "đậu nành", "óc chó", "hạnh nhân", "fami"],
+    "answer": "Sữa Hạt đang là xu hướng sống xanh đấy ạ! Bên mình có TH True Nut (Óc chó, Hạnh nhân), Fami, Veyo... rất thơm ngon và bổ dưỡng, phù hợp cả cho người ăn chay."
+  },
+  {
+    "keywords": ["sữa chua", "men sống", "tiêu hóa", "probi"],
+    "answer": "Sữa Chua tại MilkFamily có cả dạng ăn và uống (Probi, Yakult...) hỗ trợ tiêu hóa rất tốt. Hàng luôn được bảo quản lạnh 24/7 nên đảm bảo tươi ngon nhất ạ!"
+  },
+  {
+    "keywords": ["chính hãng", "uy tín", "giả", "blockchain", "nguồn gốc"],
+    "answer": "Dạ bạn hoàn toàn yên tâm! 100% sản phẩm tại MilkFamily đều được gắn mã QR truy xuất nguồn gốc trên Blockchain. Bạn có thể quét mã để xem lịch sử sản xuất và hạn sử dụng minh bạch, không thể làm giả."
+  },
+  {
+    "keywords": ["liên hệ", "địa chỉ", "hotline", "gọi điện", "sdt"],
+    "answer": "Bạn có thể ghé cửa hàng tại: 123 Đường ABC, TP.HCM hoặc gọi Hotline: 1900 1500 để được hỗ trợ nhanh nhất nhé! 🥰"
+  }
 ]

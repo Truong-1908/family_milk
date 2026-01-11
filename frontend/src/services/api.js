@@ -16,6 +16,20 @@ export const api = {
     });
     return res.json();
   },
+  // [THÊM MỚI] Hàm nhập hàng loạt
+  createProductsBulk: async (products) => {
+    try {
+      const res = await fetch(`${API_URL}/create_products_bulk`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ products }),
+      });
+      return await res.json();
+    } catch (e) {
+      console.error("Lỗi Bulk Import:", e);
+      return { status: "error", message: e.message };
+    }
+  },
 
   // Xác thực sản phẩm (Tra cứu)
   verifyProduct: async (uid) => {
