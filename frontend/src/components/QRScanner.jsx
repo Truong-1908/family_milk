@@ -61,12 +61,6 @@ const QRScanner = ({ onScan, onClose }) => {
         ></button>
         <h5 className="mb-3 text-center fw-bold text-primary">Quét Mã QR</h5>
 
-        {/* Hướng dẫn sửa lỗi đen màn hình */}
-        <div className="alert alert-warning py-2 small mb-3 text-center border-0 bg-warning bg-opacity-10 text-dark">
-          ⚠️ <b>Nếu màn hình đen:</b> Hãy bấm vào hộp chọn Camera bên dưới và
-          đổi sang <b>"Integrated Webcam"</b> hoặc <b>"USB Video Device"</b>.
-        </div>
-
         <div id="reader"></div>
       </div>
     </div>
