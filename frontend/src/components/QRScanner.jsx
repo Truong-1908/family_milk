@@ -47,11 +47,16 @@ const QRScanner = ({ onScan, onClose }) => {
 
   return (
     <div
-      className="position-fixed top-0 start-0 w-100 h-100 bg-dark bg-opacity-75 d-flex align-items-center justify-content-center"
-      style={{ zIndex: 2000 }}
+      // [ĐÃ SỬA]: align-items-start (đẩy lên đầu), pt-5 (tạo khoảng cách với mép trên)
+      className="position-fixed top-0 start-0 w-100 h-100 bg-dark bg-opacity-75 d-flex align-items-start justify-content-center pt-5"
+      style={{
+        zIndex: 9999, // Đảm bảo nổi lên trên cùng mọi thứ
+        backdropFilter: "blur(5px)", // Làm mờ nền phía sau cho đẹp
+      }}
     >
       <div
-        className="bg-white p-4 rounded-4 position-relative"
+        // [ĐÃ SỬA]: Thêm mt-4 để cách lề trên thêm một chút cho thoáng
+        className="bg-white p-4 rounded-4 position-relative mt-4 shadow-lg"
         style={{ maxWidth: "500px", width: "90%" }}
       >
         <button
@@ -62,6 +67,10 @@ const QRScanner = ({ onScan, onClose }) => {
         <h5 className="mb-3 text-center fw-bold text-primary">Quét Mã QR</h5>
 
         <div id="reader"></div>
+
+        <div className="text-center mt-2 small text-muted">
+          Đặt mã QR vào khung hình để quét
+        </div>
       </div>
     </div>
   );
