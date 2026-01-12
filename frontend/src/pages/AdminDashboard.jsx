@@ -1,5 +1,5 @@
 import UpdateExcel from "../components/UpdateExcel";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Package,
   Plus,
@@ -10,11 +10,15 @@ import {
   Eye,
   EyeOff,
   Users,
-  Search, // [MỚI] Import icon Search
-  X, // [MỚI] Import icon X để xóa tìm kiếm
+  Search,
+  X,
   BarChart as BarIcon,
   PieChart as PieIcon,
   AlertTriangle,
+  CheckCircle, // [MỚI] Icon tích xanh
+  XCircle, // [MỚI] Icon X đỏ
+  Layers, // [MỚI] Icon lớp (Tất cả)
+  FileText,
 } from "lucide-react";
 import { api } from "../services/api";
 import {
@@ -32,23 +36,29 @@ import {
 } from "recharts";
 
 const AdminDashboard = ({ onLogout }) => {
-  const [activeTab, setActiveTab] = useState("statistics"); // 'products' or 'users'
+  const [activeTab, setActiveTab] = useState("statistics");
   const [products, setProducts] = useState([]);
   const [history, setHistory] = useState([]);
-  const [users, setUsers] = useState([]); // Mock users
+  const [users, setUsers] = useState([]);
   const [showHistory, setShowHistory] = useState(false);
 
-  // [MỚI] State lưu từ khóa tìm kiếm
+  // State tìm kiếm
   const [searchTerm, setSearchTerm] = useState("");
+
+  // [MỚI] State lọc lô hàng (all, safe, warning, expired)
+  const [batchFilter, setBatchFilter] = useState("all");
 
   const [hiddenList, setHiddenList] = useState(
     JSON.parse(localStorage.getItem("hidden_products") || "[]")
   );
 
+  // State nhập Excel
+  const [isImporting, setIsImporting] = useState(false);
+  const fileInputRef = useRef(null);
+
   const loadData = async () => {
     const data = await api.getProducts();
     setProducts(data);
-    // Real Users
     const usersData = await api.getUsers();
     setUsers(usersData);
   };
@@ -62,7 +72,6 @@ const AdminDashboard = ({ onLogout }) => {
     const formData = new FormData(e.target);
     const data = Object.fromEntries(formData.entries());
     data.expiry_date_unix = Math.floor(new Date(data.p_date).getTime() / 1000);
-    // data.qr_url = `${window.location.origin}/?uid=${data.uid}`;
 
     const res = await api.createProduct(data);
     if (res.status === "success") {
@@ -70,6 +79,63 @@ const AdminDashboard = ({ onLogout }) => {
       loadData();
       e.target.reset();
     } else alert("❌ Lỗi: " + res.message);
+  };
+
+  const handleFileUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    setIsImporting(true);
+    const reader = new FileReader();
+
+    reader.onload = async (event) => {
+      const text = event.target.result;
+      const rows = text.trim().split("\n").slice(1);
+
+      const formattedProducts = rows
+        .map((row) => {
+          const cols = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+          if (cols.length < 5) return null;
+
+          const clean = (str) => (str ? str.replace(/^"|"$/g, "").trim() : "");
+
+          return {
+            uid: clean(cols[0]),
+            name: clean(cols[1]),
+            category: clean(cols[2]),
+            batch_number: clean(cols[3]),
+            expiry_date: clean(cols[4]),
+            expiry_date_unix: Math.floor(
+              new Date(clean(cols[4])).getTime() / 1000
+            ),
+            product_image: clean(cols[5]) || "https://placehold.co/400",
+            description: cols.slice(6).join(",").replace(/^"|"$/g, ""),
+          };
+        })
+        .filter((p) => p !== null);
+
+      if (formattedProducts.length > 0) {
+        if (
+          window.confirm(
+            `Tìm thấy ${formattedProducts.length} sản phẩm. Bạn có muốn nhập không?`
+          )
+        ) {
+          const res = await api.createProductsBulk(formattedProducts);
+          if (res.status === "success") {
+            alert("✅ Nhập hàng thành công!");
+            loadData();
+          } else {
+            alert("⚠️ Có lỗi xảy ra: " + (res.message || "Kiểm tra lại file"));
+          }
+        }
+      } else {
+        alert("❌ File không hợp lệ hoặc không có dữ liệu!");
+      }
+      setIsImporting(false);
+    };
+
+    reader.readAsText(file);
+    e.target.value = "";
   };
 
   // --- BATCH MANAGEMENT LOGIC ---
@@ -88,20 +154,38 @@ const AdminDashboard = ({ onLogout }) => {
     return { label: "An toàn", color: "success", bg: "success" };
   };
 
-  // [MỚI] Logic lọc sản phẩm theo từ khóa tìm kiếm
+  // Logic lọc sản phẩm theo từ khóa tìm kiếm (Tab Products)
   const filteredProducts = products.filter(
     (p) =>
       p.uid.toLowerCase().includes(searchTerm.toLowerCase()) ||
       p.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // Sắp xếp trên danh sách gốc (hoặc danh sách đã lọc nếu muốn sắp xếp kết quả tìm kiếm)
-  // Ở đây mình sắp xếp trên filteredProducts để khi tìm kiếm vẫn giữ thứ tự ưu tiên hạn sử dụng
-  const sortedProducts = [...filteredProducts].sort((a, b) => {
-    const daysA = getDaysRemaining(a.expiry_date);
-    const daysB = getDaysRemaining(b.expiry_date);
-    return daysA - daysB; // Ưu tiên hết hạn lên đầu
-  });
+  // [MỚI] Logic lọc sản phẩm theo hạn sử dụng (Tab Batches)
+  const getFilteredBatches = () => {
+    let result = [...products];
+
+    // Lọc theo nút bấm
+    if (batchFilter === "expired") {
+      result = result.filter((p) => getDaysRemaining(p.expiry_date) < 0);
+    } else if (batchFilter === "warning") {
+      result = result.filter((p) => {
+        const days = getDaysRemaining(p.expiry_date);
+        return days >= 0 && days <= 30;
+      });
+    } else if (batchFilter === "safe") {
+      result = result.filter((p) => getDaysRemaining(p.expiry_date) > 30);
+    }
+
+    // Sắp xếp ưu tiên hết hạn lên đầu
+    return result.sort((a, b) => {
+      const daysA = getDaysRemaining(a.expiry_date);
+      const daysB = getDaysRemaining(b.expiry_date);
+      return daysA - daysB;
+    });
+  };
+
+  const batchList = getFilteredBatches();
 
   const toggleHide = (uid) => {
     const newList = hiddenList.includes(uid)
@@ -131,7 +215,6 @@ const AdminDashboard = ({ onLogout }) => {
   ).length;
   const invalidCount = history.filter((h) => h.status === "invalid").length;
 
-  // Nếu chưa load history thì tự load để hiện chart
   useEffect(() => {
     if (activeTab === "statistics" && history.length === 0) {
       api.getHistory().then(setHistory);
@@ -301,9 +384,41 @@ const AdminDashboard = ({ onLogout }) => {
 
               <div className="row g-4 mb-4 mt-2">
                 <div className="col-md-5 border-end">
-                  <h5 className="fw-bold mb-3 text-primary">
-                    <Plus size={20} className="me-1" /> Thêm Sản Phẩm Mới
-                  </h5>
+                  {/* [MỚI] Tiêu đề có nút Nhập Excel */}
+                  <div className="d-flex justify-content-between align-items-center mb-3">
+                    <h5 className="fw-bold text-primary m-0">
+                      <Plus size={20} className="me-1" /> Thêm Sản Phẩm Mới
+                    </h5>
+
+                    <div>
+                      <input
+                        type="file"
+                        accept=".csv"
+                        ref={fileInputRef}
+                        style={{ display: "none" }}
+                        onChange={handleFileUpload}
+                      />
+                      <button
+                        className="btn btn-success btn-sm rounded-pill fw-bold shadow-sm d-flex align-items-center gap-1 px-3"
+                        onClick={() => fileInputRef.current.click()}
+                        disabled={isImporting}
+                        title="Nhập danh sách từ file CSV"
+                      >
+                        {isImporting ? (
+                          <span
+                            className="spinner-border spinner-border-sm"
+                            role="status"
+                            aria-hidden="true"
+                          ></span>
+                        ) : (
+                          <FileText size={16} />
+                        )}
+                        <span className="d-none d-sm-inline">
+                          {isImporting ? "Đang xử lý..." : "Nhập Excel"}
+                        </span>
+                      </button>
+                    </div>
+                  </div>
                   <form onSubmit={handleCreate}>
                     <div className="mb-2">
                       <label className="small fw-bold text-muted">Mã ID</label>
@@ -382,7 +497,7 @@ const AdminDashboard = ({ onLogout }) => {
                     </button>
                   </div>
 
-                  {/* [MỚI] Thanh Tìm Kiếm */}
+                  {/* Thanh Tìm Kiếm */}
                   <div className="input-group mb-3 shadow-sm">
                     <span className="input-group-text bg-white border-end-0 text-muted">
                       <Search size={18} />
@@ -409,7 +524,7 @@ const AdminDashboard = ({ onLogout }) => {
                     style={{ maxHeight: "500px" }}
                   >
                     <table className="table fs-6">
-                      <thead className="table-light">
+                      <thead className="table-light sticky-top">
                         <tr>
                           <th className="rounded-start">ID</th>
                           <th>Tên</th>
@@ -418,7 +533,6 @@ const AdminDashboard = ({ onLogout }) => {
                         </tr>
                       </thead>
                       <tbody>
-                        {/* [MỚI] Sử dụng filteredProducts thay vì products để hiển thị kết quả tìm kiếm */}
                         {filteredProducts.length > 0 ? (
                           filteredProducts.map((p) => (
                             <tr
@@ -511,23 +625,71 @@ const AdminDashboard = ({ onLogout }) => {
             </div>
           )}
 
+          {/* [MỚI] Tab Quản Lý Lô Hàng đã được chia mục */}
           {activeTab === "batches" && (
             <div className="glass-panel p-4 rounded-4 animate-in">
               <h4 className="fw-bold mb-4 text-primary">
                 <AlertTriangle size={20} className="me-1" /> Quản Lý Lô Hàng &
                 Hạn Sử Dụng
               </h4>
-              <div className="alert alert-warning border-0 bg-warning bg-opacity-10 text-warning-emphasis d-flex align-items-center">
-                <AlertTriangle className="me-2" />
-                <div>
-                  <strong>Lưu ý:</strong> Các sản phẩm có hạn sử dụng dưới 30
-                  ngày sẽ được cảnh báo màu vàng.
-                </div>
+
+              {/* THANH LỌC LÔ HÀNG */}
+              <div className="d-flex flex-wrap gap-2 mb-4">
+                <button
+                  className={`btn rounded-pill px-3 d-flex align-items-center gap-2 ${
+                    batchFilter === "all"
+                      ? "btn-primary"
+                      : "btn-light border text-muted"
+                  }`}
+                  onClick={() => setBatchFilter("all")}
+                >
+                  <Layers size={16} /> Tất cả
+                </button>
+                <button
+                  className={`btn rounded-pill px-3 d-flex align-items-center gap-2 ${
+                    batchFilter === "safe"
+                      ? "btn-success text-white"
+                      : "btn-light border text-muted"
+                  }`}
+                  onClick={() => setBatchFilter("safe")}
+                >
+                  <CheckCircle size={16} /> Còn hạn
+                </button>
+                <button
+                  className={`btn rounded-pill px-3 d-flex align-items-center gap-2 ${
+                    batchFilter === "warning"
+                      ? "btn-warning text-dark"
+                      : "btn-light border text-muted"
+                  }`}
+                  onClick={() => setBatchFilter("warning")}
+                >
+                  <AlertTriangle size={16} /> Sắp hết hạn
+                </button>
+                <button
+                  className={`btn rounded-pill px-3 d-flex align-items-center gap-2 ${
+                    batchFilter === "expired"
+                      ? "btn-danger text-white"
+                      : "btn-light border text-muted"
+                  }`}
+                  onClick={() => setBatchFilter("expired")}
+                >
+                  <XCircle size={16} /> Đã hết hạn
+                </button>
               </div>
 
-              <div className="table-responsive">
+              {batchFilter === "all" && (
+                <div className="alert alert-warning border-0 bg-warning bg-opacity-10 text-warning-emphasis d-flex align-items-center mb-3">
+                  <AlertTriangle className="me-2" />
+                  <div>
+                    <strong>Lưu ý:</strong> Các sản phẩm có hạn sử dụng dưới 30
+                    ngày sẽ được cảnh báo màu vàng.
+                  </div>
+                </div>
+              )}
+
+              <div className="table-responsive" style={{ maxHeight: "600px" }}>
                 <table className="table fs-6 align-middle">
-                  <thead className="table-light">
+                  <thead className="table-light sticky-top">
                     <tr>
                       <th className="rounded-start">Mã Lô</th>
                       <th>Sản Phẩm</th>
@@ -537,35 +699,53 @@ const AdminDashboard = ({ onLogout }) => {
                     </tr>
                   </thead>
                   <tbody>
-                    {sortedProducts.map((p) => {
-                      const status = getExpiryStatus(p.expiry_date);
-                      const days = getDaysRemaining(p.expiry_date);
-                      return (
-                        <tr
-                          key={p.uid}
-                          className={
-                            days <= 30 ? "bg-warning bg-opacity-10" : ""
-                          }
-                        >
-                          <td className="fw-bold font-monospace">
-                            {p.batch_number}
-                          </td>
-                          <td>
-                            <div className="fw-bold text-dark">{p.name}</div>
-                            <small className="text-muted">{p.uid}</small>
-                          </td>
-                          <td>{p.expiry_date}</td>
-                          <td className="fw-bold">{days} ngày</td>
-                          <td className="text-center">
-                            <span
-                              className={`badge bg-${status.bg} text-white px-3 py-2 rounded-pill`}
+                    {batchList.length > 0 ? (
+                      batchList.map((p) => {
+                        const status = getExpiryStatus(p.expiry_date);
+                        const days = getDaysRemaining(p.expiry_date);
+                        return (
+                          <tr
+                            key={p.uid}
+                            className={
+                              days <= 30 && days >= 0
+                                ? "bg-warning bg-opacity-10"
+                                : days < 0
+                                ? "bg-danger bg-opacity-10"
+                                : ""
+                            }
+                          >
+                            <td className="fw-bold font-monospace">
+                              {p.batch_number}
+                            </td>
+                            <td>
+                              <div className="fw-bold text-dark">{p.name}</div>
+                              <small className="text-muted">{p.uid}</small>
+                            </td>
+                            <td>{p.expiry_date}</td>
+                            <td
+                              className={`fw-bold ${
+                                days < 0 ? "text-danger" : ""
+                              }`}
                             >
-                              {status.label}
-                            </span>
-                          </td>
-                        </tr>
-                      );
-                    })}
+                              {days < 0 ? `Quá ${Math.abs(days)}` : days} ngày
+                            </td>
+                            <td className="text-center">
+                              <span
+                                className={`badge bg-${status.bg} text-white px-3 py-2 rounded-pill`}
+                              >
+                                {status.label}
+                              </span>
+                            </td>
+                          </tr>
+                        );
+                      })
+                    ) : (
+                      <tr>
+                        <td colSpan="5" className="text-center text-muted py-4">
+                          Không có lô hàng nào trong mục này.
+                        </td>
+                      </tr>
+                    )}
                   </tbody>
                 </table>
               </div>
