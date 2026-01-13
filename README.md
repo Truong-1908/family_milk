@@ -12,8 +12,15 @@ Dự án truy xuất nguồn gốc sữa.
 
 Link truy cập: http://localhost:5173
 
-## Tài khoản Quản trị (Admin) mặc định:
+## 🔐 Tài khoản Quản trị (Admin)
+- **Tài khoản**: `admin`
 - **Mật khẩu**: `123`
+
+## 📦 Hướng dẫn Nhập Dữ Liệu (Quy trình chuẩn)
+Để khôi phục dữ liệu sản phẩm (101 món) sang máy mới:
+1. Mở terminal tại thư mục `backend`.
+2. Chạy lệnh: `node seed_bulk.js`
+3. Đợi báo thành công là xong.
 
 ## 🛠 Công Nghệ Sử Dụng (Tech Stack)
 
