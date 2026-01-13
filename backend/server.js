@@ -22,6 +22,23 @@ app.use(express.json()); // Cho phép đọc dữ liệu JSON từ body request
 connectDB(); // Kết nối MongoDB
 initBlockchain(); // Kết nối Ganache
 
+//  Kiểm tra mật khẩu mạnh
+function validatePassword(password) {
+  if (password.length < 8) {
+    return "Mật khẩu phải có ít nhất 8 ký tự";
+  }
+  if (!/[A-Za-z]/.test(password)) {
+    return "Mật khẩu phải chứa ít nhất 1 chữ cái";
+  }
+  if (!/\d/.test(password)) {
+    return "Mật khẩu phải chứa ít nhất 1 số";
+  }
+  if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+    return "Mật khẩu phải chứa ít nhất 1 ký tự đặc biệt";
+  }
+  return null;
+}
+
 // --- CÁC API ENDPOINTS ---
 
 // 1. Lấy danh sách sản phẩm (Cho cả Admin và User)
@@ -244,6 +261,15 @@ app.post("/register", async (req, res) => {
   try {
     const { fullname, username, email, password } = req.body;
 
+    // Hàm kiểm tra mật khẩu
+    const passwordError = validatePassword(password);
+    if (passwordError) {
+      return res.json({
+        status: "error",
+        message: passwordError,
+      });
+    }
+    
     // Check trùng
     const exists = await User.findOne({ username });
     if (exists)
