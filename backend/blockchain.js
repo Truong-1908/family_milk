@@ -24,10 +24,9 @@ const initBlockchain = async () => {
     const configRaw = fs.readFileSync(CONFIG_PATH, "utf8");
     const config = JSON.parse(configRaw);
 
-    // Kết nối tới Ganache (Mặc định cổng 7545, nếu bạn dùng 8545 thì sửa ở đây)
-    // Nếu deploy lên mạng testnet (Sepolia, Goerli...) thì thay URL RPC ở đây
-    const ganacheUrl = "http://127.0.0.1:7545";
-    provider = new ethers.JsonRpcProvider(ganacheUrl);
+    // Kết nối tới Ganache (Mặc định cổng 7545) hoặc Testnet Online thông qua biến môi trường
+    const rpcUrl = process.env.RPC_URL || "http://127.0.0.1:7545";
+    provider = new ethers.JsonRpcProvider(rpcUrl);
 
     // Kiểm tra kết nối tới mạng
     const network = await provider.getNetwork();

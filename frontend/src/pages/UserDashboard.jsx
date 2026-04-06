@@ -197,8 +197,8 @@ const UserDashboard = ({ onBack }) => {
                 <CheckCircle size={18} /> SẢN PHẨM CHÍNH HÃNG
               </div>
 
-              {/* [MỚI] Hiển thị cảnh báo nếu quét quá nhiều lần */}
-              {detail.scan_count > 5 && (
+              {/* [MỚI] Hiển thị cảnh báo nếu TÀI KHOẢN NÀY quét quá nhiều lần */}
+              {detail.my_scan_count >= 5 && (
                 <div
                   className="alert alert-warning d-flex align-items-start mb-3 border-warning shadow-sm rounded-4"
                   role="alert"
@@ -209,14 +209,11 @@ const UserDashboard = ({ onBack }) => {
                   />
                   <div>
                     <h6 className="fw-bold mb-1 text-dark">
-                      ⚠️ Cảnh báo an toàn!
+                      ⚠️ Cảnh báo!
                     </h6>
                     <small className="text-dark">
-                      Sản phẩm này đã được quét{" "}
-                      <strong>{detail.scan_count} lần</strong>. Lượt quét cao
-                      bất thường cho thấy mã QR này có thể đã bị làm giả (sao
-                      chép dán lên nhiều hộp khác nhau). Hãy kiểm tra kỹ tem
-                      niêm phong vật lý!
+                      Tài khoản của bạn đã quét sản phẩm này{" "}
+                      <strong>{detail.my_scan_count + 1} lần</strong>. Việc một tài khoản liên tục quét cùng một sản phẩm {detail.my_scan_count + 1} lần là dấu hiệu bất thường, có thể mã QR này đã bị làm giả (sao chép dán lên nhiều hộp khác nhau). Hãy kiểm tra kỹ tem niêm phong vật lý!
                     </small>
                   </div>
                 </div>
@@ -233,17 +230,7 @@ const UserDashboard = ({ onBack }) => {
               </p>
 
               <div className="row g-3 mb-4">
-                <div className="col-6">
-                  <div className="p-3 bg-light rounded-4 border">
-                    <small className="text-muted fw-bold d-block mb-1">
-                      SỐ LÔ SẢN XUẤT
-                    </small>
-                    <span className="fs-5 fw-bold text-dark">
-                      {detail.batch_number}
-                    </span>
-                  </div>
-                </div>
-                <div className="col-6">
+                <div className="col-12">
                   <div className="p-3 bg-light rounded-4 border">
                     <small className="text-muted fw-bold d-block mb-1">
                       HẠN SỬ DỤNG
@@ -587,7 +574,6 @@ const UserDashboard = ({ onBack }) => {
                       {p.name}
                     </h6>
                     <div className="d-flex justify-content-between px-1">
-                      <small className="text-muted">Lô: {p.batch_number}</small>
                       <small className="text-primary fw-bold">{p.uid}</small>
                     </div>
                   </motion.div>

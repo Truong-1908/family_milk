@@ -1,7 +1,8 @@
 const mongoose = require("mongoose");
 
 // Thay 'milk_family_db' bằng tên database bạn muốn
-const MONGO_URI = "mongodb://localhost:27017/milk_qr_blockchain_db";
+// Hỗ trợ truy cập cả Local và DB Online (Cloud Atlas)
+const MONGO_URI = process.env.MONGO_URI || "mongodb://localhost:27017/milk_qr_blockchain_db";
 
 const connectDB = async () => {
   try {

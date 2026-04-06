@@ -21,6 +21,8 @@ import {
   FileText,
   MessageSquare,
   MessageCircle,
+  Edit,
+  Trash2,
 } from "lucide-react";
 import { api } from "../services/api";
 import {
@@ -58,6 +60,37 @@ const AdminDashboard = ({ user, onLogout }) => {
   const [hiddenList, setHiddenList] = useState(
     JSON.parse(localStorage.getItem("hidden_products") || "[]"),
   );
+
+  // MỚI: State và Handlers cho Delete & Edit
+  const [editingProduct, setEditingProduct] = useState(null);
+
+  const handleDelete = async (uid) => {
+    if (window.confirm(`Bạn có chắc chắn muốn xóa sản phẩm ${uid} này?`)) {
+      const res = await api.deleteProduct(uid);
+      if (res.status === "success") {
+        alert("✅ Đã xóa!");
+        loadData();
+      } else {
+        alert("❌ Lỗi: " + res.message);
+      }
+    }
+  };
+
+  const handleUpdate = async (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const data = Object.fromEntries(formData.entries());
+    data.expiry_date_unix = Math.floor(new Date(data.p_date).getTime() / 1000);
+
+    const res = await api.updateProduct(editingProduct.uid, data);
+    if (res.status === "success") {
+      alert("✅ Đã cập nhật!");
+      setEditingProduct(null);
+      loadData();
+    } else {
+      alert("❌ Lỗi: " + res.message);
+    }
+  };
 
   // State nhập Excel
   const [isImporting, setIsImporting] = useState(false);
@@ -112,7 +145,7 @@ const AdminDashboard = ({ user, onLogout }) => {
             uid: clean(cols[0]),
             name: clean(cols[1]),
             category: clean(cols[2]),
-            batch_number: clean(cols[3]),
+            batch_number: "N/A",
             expiry_date: clean(cols[4]),
             // Tính unix timestamp cho việc tính toán ngày còn lại
             expiry_date_unix: Math.floor(
@@ -305,7 +338,7 @@ const AdminDashboard = ({ user, onLogout }) => {
                 }`}
                 onClick={() => setActiveTab("batches")}
               >
-                <AlertTriangle size={20} className="me-2" /> Quản Lý Lô Hàng
+                <AlertTriangle size={20} className="me-2" /> Quản Lý Hạn Sử Dụng
               </button>
               <button
                 className={`btn text-start p-3 rounded-3 fw-bold ${
@@ -466,17 +499,7 @@ const AdminDashboard = ({ user, onLogout }) => {
                       />
                     </div>
                     <div className="row g-2 mb-2">
-                      <div className="col-6">
-                        <label className="small fw-bold text-muted">
-                          Số Lô
-                        </label>
-                        <input
-                          name="batch_number"
-                          className="form-control rounded-3"
-                          required
-                        />
-                      </div>
-                      <div className="col-6">
+                      <div className="col-12">
                         <label className="small fw-bold text-muted">
                           Hạn Dùng
                         </label>
@@ -576,23 +599,39 @@ const AdminDashboard = ({ user, onLogout }) => {
                                 {p.scan_count || 0}
                               </td>
                               <td className="text-center">
-                                <button
-                                  className={`btn btn-sm border-0 ${
-                                    hiddenList.includes(p.uid)
-                                      ? "text-muted"
-                                      : "text-primary"
-                                  }`}
-                                  onClick={() => toggleHide(p.uid)}
-                                  title={
-                                    hiddenList.includes(p.uid) ? "Hiện" : "Ẩn"
-                                  }
-                                >
-                                  {hiddenList.includes(p.uid) ? (
-                                    <EyeOff size={16} />
-                                  ) : (
-                                    <Eye size={16} />
-                                  )}
-                                </button>
+                                <div className="d-flex justify-content-center gap-1">
+                                  <button
+                                    className={`btn btn-sm border-0 ${
+                                      hiddenList.includes(p.uid)
+                                        ? "text-muted"
+                                        : "text-primary"
+                                    }`}
+                                    onClick={() => toggleHide(p.uid)}
+                                    title={
+                                      hiddenList.includes(p.uid) ? "Hiện" : "Ẩn"
+                                    }
+                                  >
+                                    {hiddenList.includes(p.uid) ? (
+                                      <EyeOff size={16} />
+                                    ) : (
+                                      <Eye size={16} />
+                                    )}
+                                  </button>
+                                  <button
+                                    className="btn btn-sm border-0 text-warning"
+                                    onClick={() => setEditingProduct(p)}
+                                    title="Sửa"
+                                  >
+                                    <Edit size={16} />
+                                  </button>
+                                  <button
+                                    className="btn btn-sm border-0 text-danger"
+                                    onClick={() => handleDelete(p.uid)}
+                                    title="Xóa"
+                                  >
+                                    <Trash2 size={16} />
+                                  </button>
+                                </div>
                               </td>
                             </tr>
                           ))
@@ -653,8 +692,7 @@ const AdminDashboard = ({ user, onLogout }) => {
           {activeTab === "batches" && (
             <div className="glass-panel p-4 rounded-4 animate-in">
               <h4 className="fw-bold mb-4 text-primary">
-                <AlertTriangle size={20} className="me-1" /> Quản Lý Lô Hàng &
-                Hạn Sử Dụng
+                <AlertTriangle size={20} className="me-1" /> Quản Lý Hạn Sử Dụng
               </h4>
 
               <div className="d-flex flex-wrap gap-2 mb-4">
@@ -714,8 +752,7 @@ const AdminDashboard = ({ user, onLogout }) => {
                 <table className="table fs-6 align-middle">
                   <thead className="table-light sticky-top">
                     <tr>
-                      <th className="rounded-start">Mã Lô</th>
-                      <th>Sản Phẩm</th>
+                      <th className="rounded-start">Sản Phẩm</th>
                       <th>Hạn Sử Dụng</th>
                       <th>Còn Lại</th>
                       <th className="rounded-end text-center">Trạng Thái</th>
@@ -737,9 +774,6 @@ const AdminDashboard = ({ user, onLogout }) => {
                                   : ""
                             }
                           >
-                            <td className="fw-bold font-monospace">
-                              {p.batch_number}
-                            </td>
                             <td>
                               <div className="fw-bold text-dark">{p.name}</div>
                               <small className="text-muted">{p.uid}</small>
@@ -776,6 +810,87 @@ const AdminDashboard = ({ user, onLogout }) => {
           )}
         </div>
       </div>
+
+      {/* MODAL SỬA SẢN PHẨM */}
+      {editingProduct && (
+        <div
+          className="modal d-block"
+          style={{
+            backgroundColor: "rgba(0,0,0,0.5)",
+            backdropFilter: "blur(5px)",
+          }}
+        >
+          <div className="modal-dialog modal-dialog-centered">
+            <div className="glass-panel modal-content border-0 rounded-4">
+              <div className="modal-header border-0 pb-0">
+                <h5 className="modal-title fw-bold text-gradient">
+                  Sửa Sản Phẩm {editingProduct.uid}
+                </h5>
+                <button
+                  className="btn-close"
+                  onClick={() => setEditingProduct(null)}
+                ></button>
+              </div>
+              <div className="modal-body pt-3">
+                <form onSubmit={handleUpdate}>
+                  <div className="mb-2">
+                    <label className="small fw-bold text-muted">Tên Sản Phẩm</label>
+                    <input
+                      name="name"
+                      className="form-control rounded-3"
+                      defaultValue={editingProduct.name}
+                      required
+                    />
+                  </div>
+                  <div className="row g-2 mb-2">
+                    <div className="col-12">
+                      <label className="small fw-bold text-muted">Hạn Dùng</label>
+                      <input
+                        name="p_date"
+                        type="date"
+                        className="form-control rounded-3"
+                        defaultValue={
+                          editingProduct.expiry_date_unix
+                            ? new Date(editingProduct.expiry_date_unix * 1000)
+                                .toISOString()
+                                .split("T")[0]
+                            : ""
+                        }
+                        required
+                      />
+                    </div>
+                  </div>
+                  <div className="mb-2">
+                    <label className="small fw-bold text-muted">Hình Ảnh (URL)</label>
+                    <input
+                      name="product_image"
+                      className="form-control rounded-3"
+                      defaultValue={editingProduct.product_image}
+                    />
+                  </div>
+                  <div className="mb-3">
+                    <label className="small fw-bold text-muted">Mô Tả</label>
+                    <textarea
+                      name="description"
+                      className="form-control rounded-3"
+                      rows="3"
+                      defaultValue={editingProduct.description}
+                    ></textarea>
+                  </div>
+                  <div className="d-flex justify-content-end gap-2">
+                    <button type="button" className="btn btn-light rounded-pill fw-bold" onClick={() => setEditingProduct(null)}>
+                      Hủy
+                    </button>
+                    <button type="submit" className="btn btn-primary rounded-pill fw-bold">
+                      CẬP NHẬT
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* --- MODAL LỊCH SỬ GỘP CHUNG --- */}
       {showHistory && (

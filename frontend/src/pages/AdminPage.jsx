@@ -146,17 +146,7 @@ export default function AdminPage({ onLogout }) {
                   required
                 />
               </div>
-              <div className="mb-3">
-                <label className="form-label small fw-bold text-muted">
-                  Số Lô (Batch)
-                </label>
-                <input
-                  name="batch_number"
-                  className="form-control rounded-3"
-                  placeholder="Ví dụ: Lô A1"
-                  required
-                />
-              </div>
+
               <div className="mb-3">
                 <label className="form-label small fw-bold text-muted">
                   Hạn Sử Dụng
@@ -252,7 +242,6 @@ export default function AdminPage({ onLogout }) {
                         </td>
                         <td>
                           <div className="fw-bold text-dark">{p.name}</div>
-                          <small className="text-muted">{p.batch_number}</small>
                         </td>
                         <td className="text-center fw-bold text-secondary">
                           {p.scan_count || 0}

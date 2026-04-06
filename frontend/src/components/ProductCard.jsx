@@ -56,12 +56,6 @@ export default function ProductCard({ product, onClick }) {
             <span className="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-2 py-1 mb-2">
               {product.uid}
             </span>
-            <small
-              className="d-block text-muted"
-              style={{ fontSize: "0.8rem" }}
-            >
-              Lô: {product.batch_number}
-            </small>
           </div>
         </div>
       </div>

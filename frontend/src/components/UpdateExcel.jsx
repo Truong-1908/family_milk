@@ -43,7 +43,7 @@ const UpdateExcel = ({ onSuccess }) => {
         uid: item["Mã sản phẩm"] || item.uid,
         name: item["Tên sản phẩm"] || item.name,
         category: item["Danh mục"] || item.category,
-        batch_number: item["Số lô"] || item.batch_number,
+        batch_number: "N/A",
         expiry_date_unix: convertDateToUnix(item["Hạn sử dụng"]),
         product_image: item["Link ảnh"] || "",
         description: item["Mô tả"] || "",
@@ -119,7 +119,7 @@ const UpdateExcel = ({ onSuccess }) => {
       )}
 
       <div className="mt-3 text-muted small fst-italic">
-        * File cần có các cột: Mã sản phẩm, Tên sản phẩm, Số lô, Hạn sử dụng...
+        * File cần có các cột: Mã sản phẩm, Tên sản phẩm, Hạn sử dụng...
       </div>
     </div>
   );

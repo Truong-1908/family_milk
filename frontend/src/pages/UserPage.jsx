@@ -103,9 +103,6 @@ const ProductCard = ({ product, onClick }) => (
           <span className="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-2 py-1 mb-2">
             {product.uid}
           </span>
-          <small className="d-block text-muted" style={{ fontSize: "0.8rem" }}>
-            Lô: {product.batch_number}
-          </small>
         </div>
       </div>
     </div>
@@ -376,20 +373,7 @@ export default function UserPage({ onBack }) {
               </div>
 
               <div className="row g-3 mb-4">
-                <div className="col-6">
-                  <div className="p-3 bg-light rounded-3 border">
-                    <small
-                      className="text-muted fw-bold d-block text-uppercase"
-                      style={{ fontSize: "0.75rem" }}
-                    >
-                      Số Lô Sản Xuất
-                    </small>
-                    <span className="fs-5 fw-bold text-dark">
-                      {detailData.batch_number}
-                    </span>
-                  </div>
-                </div>
-                <div className="col-6">
+                <div className="col-12">
                   <div className="p-3 bg-light rounded-3 border">
                     <small
                       className="text-muted fw-bold d-block text-uppercase"
