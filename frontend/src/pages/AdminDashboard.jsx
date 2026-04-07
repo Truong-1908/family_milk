@@ -63,6 +63,7 @@ const AdminDashboard = ({ user, onLogout }) => {
 
   // MỚI: State và Handlers cho Delete & Edit
   const [editingProduct, setEditingProduct] = useState(null);
+  const [selectedProducts, setSelectedProducts] = useState([]);
 
   const handleDelete = async (uid) => {
     if (window.confirm(`Bạn có chắc chắn muốn xóa sản phẩm ${uid} này?`)) {
@@ -73,6 +74,33 @@ const AdminDashboard = ({ user, onLogout }) => {
       } else {
         alert("❌ Lỗi: " + res.message);
       }
+    }
+  };
+
+  const handleSelectProduct = (uid) => {
+    setSelectedProducts((prev) => 
+      prev.includes(uid) ? prev.filter((id) => id !== uid) : [...prev, uid]
+    );
+  };
+
+  const handleSelectAll = (e) => {
+    if (e.target.checked) {
+      setSelectedProducts(filteredProducts.map((p) => p.uid));
+    } else {
+      setSelectedProducts([]);
+    }
+  };
+
+  const handleBulkDelete = async () => {
+    if (window.confirm(`Bạn có chắc chắn muốn xóa ${selectedProducts.length} sản phẩm đã chọn?`)) {
+      let successCount = 0;
+      for (const uid of selectedProducts) {
+        const res = await api.deleteProduct(uid);
+        if (res.status === "success") successCount++;
+      }
+      alert(`✅ Đã xóa thành công ${successCount}/${selectedProducts.length} sản phẩm!`);
+      setSelectedProducts([]);
+      loadData();
     }
   };
 
@@ -535,8 +563,16 @@ const AdminDashboard = ({ user, onLogout }) => {
                 </div>
                 <div className="col-md-7">
                   <div className="d-flex justify-content-between align-items-center mb-3">
-                    <h5 className="fw-bold m-0">
+                    <h5 className="fw-bold m-0 d-flex align-items-center">
                       <List size={20} className="me-1" /> Danh Sách
+                      {selectedProducts.length > 0 && (
+                        <button 
+                          className="btn btn-sm btn-danger rounded-pill fw-bold ms-3 d-flex align-items-center" 
+                          onClick={handleBulkDelete}
+                        >
+                          <Trash2 size={16} className="me-1" /> Xóa {selectedProducts.length} mục
+                        </button>
+                      )}
                     </h5>
                     <button
                       className="btn btn-sm btn-light rounded-pill border"
@@ -574,7 +610,15 @@ const AdminDashboard = ({ user, onLogout }) => {
                     <table className="table fs-6">
                       <thead className="table-light sticky-top">
                         <tr>
-                          <th className="rounded-start">ID</th>
+                          <th className="rounded-start text-center" style={{ width: "40px" }}>
+                            <input 
+                              type="checkbox" 
+                              className="form-check-input"
+                              onChange={handleSelectAll} 
+                              checked={selectedProducts.length > 0 && selectedProducts.length === filteredProducts.length} 
+                            />
+                          </th>
+                          <th>ID</th>
                           <th>Tên</th>
                           <th className="text-center">Quét</th>
                           <th className="text-center rounded-end">Hành động</th>
@@ -589,7 +633,15 @@ const AdminDashboard = ({ user, onLogout }) => {
                                 opacity: hiddenList.includes(p.uid) ? 0.5 : 1,
                               }}
                             >
-                              <td>
+                              <td className="text-center align-middle">
+                                <input 
+                                  type="checkbox" 
+                                  className="form-check-input"
+                                  checked={selectedProducts.includes(p.uid)} 
+                                  onChange={() => handleSelectProduct(p.uid)} 
+                                />
+                              </td>
+                              <td className="align-middle">
                                 <span className="badge bg-light text-dark border">
                                   {p.uid}
                                 </span>
