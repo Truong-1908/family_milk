@@ -15,8 +15,14 @@ import { api } from "./services/api";
 
 export default function App() {
   const [page, setPage] = useState("home");
-  const [userRole, setUserRole] = useState(null); // 'admin' | 'user'
-  const [currentUser, setCurrentUser] = useState(null); // ✅ user info
+  const [userRole, setUserRole] = useState(() => {
+    const userStr = localStorage.getItem("user");
+    return userStr ? JSON.parse(userStr).role : null;
+  }); // 'admin' | 'user'
+  const [currentUser, setCurrentUser] = useState(() => {
+    const userStr = localStorage.getItem("user");
+    return userStr ? JSON.parse(userStr) : null;
+  }); // ✅ user info
   const [openSidebar, setOpenSidebar] = useState(false); // ✅ sidebar state
 
   // LOGIN 
@@ -33,6 +39,7 @@ const handleLogin = async (role, data) => {
         };
 
         localStorage.setItem("token", "admin-demo-token"); // fake cũng được
+        localStorage.setItem("user", JSON.stringify(fakeAdmin));
         setUserRole("admin");
         setCurrentUser(fakeAdmin);
         setPage("admin-dashboard");
@@ -48,6 +55,7 @@ const handleLogin = async (role, data) => {
     
     if (res.status === "success") {
       localStorage.setItem("token", res.token);
+      localStorage.setItem("user", JSON.stringify(res.user));
       setUserRole(res.user.role || "user");
       setCurrentUser(res.user);
       setPage("user-dashboard");
@@ -74,6 +82,7 @@ const handleLogin = async (role, data) => {
   //LOGOUT 
   const handleLogout = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("user");
     setUserRole(null);
     setCurrentUser(null);
     setOpenSidebar(false);

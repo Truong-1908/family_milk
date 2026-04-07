@@ -39,8 +39,8 @@ function authMiddleware(req, res, next) {
 
 // --- MIDDLEWARE ---
 app.use(cors()); // Cho phép Frontend (React) gọi API
-app.use(express.json()); // Cho phép đọc dữ liệu JSON từ body request
-
+app.use(express.json({ limit: '50mb' })); 
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
 // --- KHỞI ĐỘNG DỊCH VỤ ---
 connectDB(); // Kết nối MongoDB
 initBlockchain(); // Kết nối Ganache

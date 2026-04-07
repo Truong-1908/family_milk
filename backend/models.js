@@ -13,13 +13,6 @@ const productSchema = new mongoose.Schema({
   category: {
     type: String,
     default: "Sữa Tươi",
-    enum: [
-      "Sữa Bột Cho Bé",
-      "Sữa Người Lớn",
-      "Sữa Tươi",
-      "Sữa Hạt",
-      "Sữa Chua",
-    ],
   },
 
   // Dữ liệu Blockchain & Xác thực
