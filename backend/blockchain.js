@@ -28,15 +28,18 @@ const initBlockchain = async () => {
     const rpcUrl = process.env.RPC_URL || "http://127.0.0.1:7545";
     provider = new ethers.JsonRpcProvider(rpcUrl);
 
-    // Kiểm tra kết nối tới mạng
+    // Lấy ví từ Private Key (nếu có) hoặc dùng Signer mặc định của node (cho Ganache)
+    if (process.env.PRIVATE_KEY) {
+      signer = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
+    } else {
+      signer = await provider.getSigner();
+    }
+    
     const network = await provider.getNetwork();
     console.log(
       `🔗 [Blockchain] Đã kết nối tới mạng Chain ID: ${network.chainId}`
     );
 
-    // Lấy ví đầu tiên trong Ganache để làm Admin (người có quyền tạo sản phẩm)
-    // Trong thực tế, bạn sẽ dùng Private Key từ biến môi trường (.env)
-    signer = await provider.getSigner();
     const adminAddress = await signer.getAddress();
     console.log(`👤 [Blockchain] Admin Address: ${adminAddress}`);
 

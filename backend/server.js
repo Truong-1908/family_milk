@@ -62,6 +62,17 @@ function validatePassword(password) {
   return null;
 }
 
+// Hàm tự động xác định Category từ UID
+function getCategoryFromUID(uid) {
+  uid = String(uid).toUpperCase();
+  if (uid.startsWith("SNL")) return "Sữa Người Lớn";
+  if (uid.startsWith("SB")) return "Sữa Bột Cho Bé";
+  if (uid.startsWith("ST")) return "Sữa Tươi";
+  if (uid.startsWith("SC")) return "Sữa Chua";
+  if (uid.startsWith("SH")) return "Sữa Hạt";
+  return null;
+}
+
 // --- CÁC API ENDPOINTS ---
 
 // 1. Lấy danh sách sản phẩm (Cho cả Admin và User)
@@ -102,7 +113,7 @@ app.post("/create_product", async (req, res) => {
     const newProduct = new Product({
       uid: p.uid,
       name: p.name,
-      category: p.category || "Sữa Tươi",
+      category: getCategoryFromUID(p.uid) || p.category || "Sữa Tươi",
       batch_number: "N/A",
       expiry_date: new Date(p.expiry_date_unix * 1000).toLocaleDateString(
         "vi-VN"
@@ -160,7 +171,7 @@ app.post("/create_products_bulk", async (req, res) => {
         const newProduct = new Product({
           uid: p.uid,
           name: p.name,
-          category: p.category || "Sữa Tươi",
+          category: getCategoryFromUID(p.uid) || p.category || "Sữa Tươi",
           batch_number: "N/A",
           expiry_date:
             p.expiry_date ||
@@ -194,7 +205,7 @@ app.put("/products/:uid", async (req, res) => {
       { uid: req.params.uid },
       {
         name: p.name,
-        category: p.category || "Sữa Tươi",
+        category: getCategoryFromUID(req.params.uid) || p.category || "Sữa Tươi",
         batch_number: "N/A",
         expiry_date: p.expiry_date || new Date(p.expiry_date_unix * 1000).toLocaleDateString("vi-VN"),
         expiry_unix: p.expiry_date_unix,
