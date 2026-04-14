@@ -91,7 +91,7 @@ const UserDashboard = ({ onBack }) => {
         return;
       }
       const currentUser = JSON.parse(userStr);
-      const data = await api.getUserHistory(currentUser.username);
+      const data = await api.getMyHistory();
       if (Array.isArray(data)) {
         setHistoryList(data);
         setView("history");
@@ -400,7 +400,7 @@ const UserDashboard = ({ onBack }) => {
                   <div>
                     <h5 className="mb-1 fw-bold text-primary">{item.uid}</h5>
                     <small className="text-muted d-block">
-                      ⏳ Thời gian: {item.time}
+                      ⏳ Thời gian: {new Date(item.timestamp).toLocaleString("vi-VN")}
                     </small>
                     <small className="text-muted d-block">
                       🔍 Phương thức:{" "}

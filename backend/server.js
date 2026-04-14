@@ -331,7 +331,7 @@ app.post("/record_scan", authMiddleware, async (req, res) => {
     const historyData = {
       uid: uid,
       location: location || "Không xác định",
-      time: now.toLocaleString("vi-VN"),
+      time: now.toLocaleString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" }),
       status: status || "valid",
       user: userId, // Liên kết với user đang đăng nhập (as ObjectId)
       timestamp: now,

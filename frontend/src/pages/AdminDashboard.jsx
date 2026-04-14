@@ -980,7 +980,9 @@ const AdminDashboard = ({ user, onLogout }) => {
                       {history.length > 0 ? (
                         history.map((h, i) => (
                           <tr key={i}>
-                            <td className="ps-4 small text-muted">{h.time}</td>
+                            <td className="ps-4 small text-muted">
+                              {new Date(h.timestamp).toLocaleString("vi-VN")}
+                            </td>
                             <td>
                               <span className="badge bg-primary">{h.uid}</span>
                             </td>

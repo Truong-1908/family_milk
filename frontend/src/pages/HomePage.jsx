@@ -464,7 +464,7 @@ const HomePage = ({ onStart }) => {
               </p>
               <p className="small opacity-75 mb-1">📞 Hotline: 1900 1234</p>
               <p className="small opacity-75">
-                📧 Email: HưngandTrường@gmail.com
+                📧 Email: HTT@gmail.com
               </p>
             </div>
             <div className="col-md-4 text-start">
