@@ -14,7 +14,18 @@ import { User, Package, Menu } from "lucide-react";
 import { api } from "./services/api";
 
 export default function App() {
-  const [page, setPage] = useState("home");
+  const [page, setPage] = useState(() => {
+    const userStr = localStorage.getItem("user");
+    if (userStr) {
+      try {
+        const u = JSON.parse(userStr);
+        return u.role === "admin" ? "admin-dashboard" : "user-dashboard";
+      } catch (e) {
+        return "home";
+      }
+    }
+    return "home";
+  });
   const [userRole, setUserRole] = useState(() => {
     const userStr = localStorage.getItem("user");
     return userStr ? JSON.parse(userStr).role : null;
@@ -213,7 +224,7 @@ const handleLogin = async (role, data) => {
 
           {page === "admin-dashboard" && userRole === "admin" && (
             <motion.div key="admin" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-              <AdminDashboard onLogout={handleLogout} />
+              <AdminDashboard onLogout={handleLogout} user={currentUser} />
             </motion.div>
           )}
 
