@@ -315,11 +315,16 @@ app.get("/verify/:uid", optionalAuthMiddleware, async (req, res) => {
 });
 
 // 4. Ghi nhận lượt quét (Thống kê)
-app.post("/record_scan", authMiddleware, async (req, res) => {
+app.post("/record_scan", optionalAuthMiddleware, async (req, res) => {
   try {
     const { uid, location, status } = req.body;
-    const userId = new mongoose.Types.ObjectId(req.user.id);
-    console.log("Ghi nhận quét được gọi:", { uid, location, status, userId: req.user.id });
+    
+    let userId = null;
+    if (req.user && req.user.id) {
+      userId = new mongoose.Types.ObjectId(req.user.id);
+    }
+    
+    console.log("Ghi nhận quét được gọi:", { uid, location, status, userId: userId });
 
     // Chỉ tăng đếm nếu hợp lệ
     if (status !== "invalid") {
@@ -333,9 +338,13 @@ app.post("/record_scan", authMiddleware, async (req, res) => {
       location: location || "Không xác định",
       time: now.toLocaleString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" }),
       status: status || "valid",
-      user: userId, // Liên kết với user đang đăng nhập (as ObjectId)
       timestamp: now,
     };
+    
+    if (userId) {
+       historyData.user = userId;
+    }
+
     const savedHistory = await History.create(historyData);
     console.log("Lịch sử được lưu:", savedHistory);
 
