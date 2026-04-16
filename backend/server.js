@@ -349,7 +349,7 @@ app.post("/record_scan", authMiddleware, async (req, res) => {
 // 5. Lấy lịch sử quét (Cho Admin xem)
 app.get("/scan_history", async (req, res) => {
   try {
-    const data = await History.find().sort({ timestamp: -1 }).limit(50);
+    const data = await History.find().sort({ timestamp: -1 }).populate('user', 'fullname username').limit(50);
     res.json(data);
   } catch (e) {
     res.json([]);

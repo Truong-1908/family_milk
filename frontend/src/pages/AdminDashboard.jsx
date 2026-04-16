@@ -984,10 +984,16 @@ const AdminDashboard = ({ user, onLogout }) => {
                               {new Date(h.timestamp).toLocaleString("vi-VN")}
                             </td>
                             <td>
-                              <span className="badge bg-primary">{h.uid}</span>
+                              <span 
+                                className="badge bg-primary text-truncate d-inline-block" 
+                                style={{ maxWidth: "150px", verticalAlign: "bottom" }}
+                                title={h.uid}
+                              >
+                                {h.uid}
+                              </span>
                             </td>
                             <td className="small fw-bold text-dark">
-                              {h.username || "Khách"}
+                              {h.user?.username || "Khách"}
                             </td>
                             <td className="small text-muted">{h.location}</td>
                             <td>
